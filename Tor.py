@@ -39,9 +39,7 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_01, a_0, ee, cylXY, k, p, EE, 
     Q1 = (q1 * a_0) * k0
     Q2 = (q2 * a_0) * k0
     mMax = 2 * N_max + 1
-    JM = np.eye((31) , dtype=np.complex)
-    for k in range(0, 31, 1):
-        JM[k][k] = 0
+    JM = np.zeros(((3, 31)), dtype=np.complex)
     n=0
     for per in range(-N_max,N_max+1,1):
         JM[n][0] = besselj(per + 1, Q1) #JM1
@@ -76,15 +74,13 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_01, a_0, ee, cylXY, k, p, EE, 
         JM[n][20]= q * (A * ((p * (per / a_0)) * JM[n][per + 14])) #Hphi_sctH
         JM[n][21] = -q * (A * (k0 * q * JM[n][per + 15])) #Hphi_sctE
         n = n + 1
-    matrixGS = np.eye((4 * mMax * 2) , dtype=np.complex)
-    for k in range(0, 4 * mMax * 2, 1):
-        matrixGS[k][k] = 0
+    matrixGS = np.zeros(((mMax*4*2, mMax*4*2)), dtype=np.complex)
     for jj in range(0, 2):
-        for jm in range(-N_max, N_max + 1, 1):
+        for jm in range(1,  4, 1):
             for ll in range(0, 2):
-                for jnu in range(-N_max, N_max + 1, 1):
-                    jmmm = (jm - 1) * 4 + 1
-                    jnunu = (jnu - 1) * 4 + 1
+                for jnu in range(1, 4, 1):
+                    jmmm = (jm - 1) * 4+1
+                    jnunu = (jnu - 1) * 4+1
                         # спросить про проход ведь будет совпадение номеров
                     if jj == ll:
                         if jm == jnu:
@@ -159,13 +155,13 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_01, a_0, ee, cylXY, k, p, EE, 
 
 a_0 = 100
 L = 3 * a_0
-n_e = 1e13
-e_0 = 4.8e-10
-m_e = 9.1e-28
-c = 3e10
+n_e = 1
+e_0 = 4.8
+m_e = 9.1
+c = 3
 H0 = 800
 w_H = (e_0 * H0) / (m_e * c)
-w_p = math.sqrt(4 * math.pi * e_0 ** 2 * n_e / m_e)
+w_p = cmath.sqrt(4 * math.pi * e_0 ** 2 * n_e / m_e)
 w_0 = 0.5 * w_H
 k_0 = w_0 / c
     # w_0
@@ -199,3 +195,15 @@ X=[]
 print(dispeq_gyrotropic_cylindersArrayFull(1, w_0, 100, 1, cylXY, k_0,3, EE, GG, HH, 3e10))
 #plt.plot(p, X)
 #plt.show()
+ JM[0][22] = -cmath.exp(- 1j * (N_max - N_max) * thetaIJ) * q * special.hankel2((N_max - N_max),k * Ljl)  # HmInll
+
+JM[0][23] = special.jv(N_max, Q)  # Jm_out
+JM[0][24] = JM[0][23] * N_max / Q - special.jv(N_max + 1, Q)  # dJm_out
+#спросить почему они одинаковые?
+JM[0][25] =  JM[0][22]*JM[0][23] # Ez_inc
+JM[0][26] =  JM[0][22]* JM[0][23]  # Hz_inc
+A = 1 / (k0 * (1 - p ** 2))
+JM[0][27] = - JM[0][22]* (A * ((p * (N_max / a_0)) *JM[0][23] ))  # Ephi_incE
+JM[0][28] = - JM[0][22]* (A * (- 1j * k0 * q * JM[0][24]))  # Ephi_incH
+JM[0][29] = - JM[0][22]* (A * (1j * k0 * q * JM[0][24]))  # Hphi_incE
+JM[0][30] = -JM[0][22]* (A * ((p * (N_max / a_0)) * JM[0][23]))  # Hphi_incH
