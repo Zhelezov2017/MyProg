@@ -114,22 +114,22 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_01, a_0, ee, cylXY, k, p, EE, 
                             thetaIJ = cmath.pi + thetaIJ
                         elif ((cylXY[jj , 1] - cylXY[ll , 1]) <= 0 and (cylXY[jj, 0] - cylXY[ll , 0]) > 0):
                             thetaIJ = 2 * cmath.pi - thetaIJ
-                        r=0
-                        for per in range(-N_max, N_max + 1, 1):
-                            JM[r][22] = -cmath.exp(- 1j * (jnu - per) * thetaIJ) * q * hankel2((per - jnu),k * Ljl)  # HmInll
 
-                            JM[r][23] = besselj(per, Q)  # Jm_out
-                            JM[r][24] =  JM[r][23] * per / Q - besselj(per + 1, Q)  # dJm_out
-#спросить почему они одинаковые?
-                            JM[r][25] =  JM[r][22]*JM[r][23] # Ez_inc
-                            JM[r][26] =  JM[r][22]* JM[r][23]  # Hz_inc
+                        JM[jnu - 1][22] = cmath.exp(-1j * (nu[jnu - 1] - m[jm - 1]) * thetaIJ) * hankel2((m[jm - 1] - nu[jnu - 1]), k0 * q * Ljl)
 
-                            A = 1 / (k0 * (1 - p ^ 2))
-                            JM[r][27] = - JM[r][22]* (A * ((p * (per / a_0)) *JM[r][23] ))  # Ephi_incE
-                            JM[r][28] = - JM[r][22]* (A * (- 1j * k0 * q * JM[r][24]))  # Ephi_incH
-                            JM[r][29] = - JM[r][22]* (A * (1j * k0 * q * JM[r][24]))  # Hphi_incE
-                            JM[r][30] = -JM[r][22]* (A * ((p * (per / a_0)) * JM[r][23]))  # Hphi_incH
-                            r = r + 1
+                        JM[jnu - 1][23] = besselj(m[jnu - 1], Q)  # Jm_out
+                        JM[jnu - 1][24] = -JM[jnu - 1][23] * m[jnu - 1] / Q + besselj(m[jnu - 1] + 1, Q)  # dJm_out
+                        # спросить почему они одинаковые?
+                        JM[jnu - 1][25] = JM[jnu - 1][22] * JM[jnu - 1][23]  # Ez_inc
+                        JM[jnu - 1][26] = JM[jnu - 1][22] * JM[jnu - 1][23]  # Hz_inc
+
+                        A = 1 / (k0 * (1 - p ** 2))
+                        JM[jnu - 1][27] = - JM[jnu - 1][22] * (
+                        A * ((p * (m[jnu - 1] / a_0)) * JM[jnu - 1][23]))  # Ephi_incE
+                        JM[jnu - 1][28] = - JM[jnu - 1][22] * (A * (- 1j * k0 * q * JM[jnu - 1][24]))  # Ephi_incH
+                        JM[jnu - 1][29] = - JM[jnu - 1][22] * (A * (1j * k0 * q * JM[jnu - 1][24]))  # Hphi_incE
+                        JM[jnu - 1][30] = -JM[jnu - 1][22] * (A * ((p * (m[jnu - 1] / a_0)) * JM[jnu - 1][23]))
+
 
                         matrixGS[jmmm + jj * 4 * mMax, jnunu + ll * 4 * mMax] = 0
                         matrixGS[jmmm + jj * 4 * mMax, jnunu + ll * 4 * mMax + 1] = 0
@@ -185,25 +185,14 @@ cylXY = np.array([[-L, 0.001], [0, 0.001]])
 EE = 1 + w_p ** 2 / (w_H ** 2 - w_0 ** 2)
 GG = -w_p ** 2 * w_H / ((w_H ** 2 - w_0 ** 2) * w_0)
 HH = 1 - w_p ** 2 / w_0 ** 2
-p = [i for i in range(2,10)]
+p = [i for i in np.arange(1.1,10,0.1)]
 n=0
 X=[]
-#спросить про случай p=1 ,следовательно Q=0 и получаем деление на ноль при J[n][15]
-#for оp in range(2, 10):
-#    result = dispeq_gyrotropic_cylindersArrayFull(1, w_0, 100, 1, cylXY, k_0, оp, EE, GG, HH, 3e10)
-#   X.append(result)
-print(dispeq_gyrotropic_cylindersArrayFull(1, w_0, 100, 1, cylXY, k_0,3, EE, GG, HH, 3e10))
-#plt.plot(p, X)
-#plt.show()
- JM[0][22] = -cmath.exp(- 1j * (N_max - N_max) * thetaIJ) * q * special.hankel2((N_max - N_max),k * Ljl)  # HmInll
-
-JM[0][23] = special.jv(N_max, Q)  # Jm_out
-JM[0][24] = JM[0][23] * N_max / Q - special.jv(N_max + 1, Q)  # dJm_out
-#спросить почему они одинаковые?
-JM[0][25] =  JM[0][22]*JM[0][23] # Ez_inc
-JM[0][26] =  JM[0][22]* JM[0][23]  # Hz_inc
-A = 1 / (k0 * (1 - p ** 2))
-JM[0][27] = - JM[0][22]* (A * ((p * (N_max / a_0)) *JM[0][23] ))  # Ephi_incE
-JM[0][28] = - JM[0][22]* (A * (- 1j * k0 * q * JM[0][24]))  # Ephi_incH
-JM[0][29] = - JM[0][22]* (A * (1j * k0 * q * JM[0][24]))  # Hphi_incE
-JM[0][30] = -JM[0][22]* (A * ((p * (N_max / a_0)) * JM[0][23]))  # Hphi_incH
+Y=[50 for i in np.arange(1.1,10,0.1)]
+for оp in np.arange(1.1,10,0.1):
+    result =math.log(dispeq_gyrotropic_cylindersArrayFull(1, w_0, 100, 1, cylXY, k_0, оp, EE, GG, HH, 3e10))
+    X.append(result)
+print(dispeq_gyrotropic_cylindersArrayFull(1, w_0, 100, 1, cylXY, k_0,6., EE, GG, HH, 3e10))
+print(X)
+plt.plot(p, X, p, Y)
+plt.show()
