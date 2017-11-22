@@ -115,7 +115,7 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_01, a_0, ee, cylXY, k, p, EE, 
                         elif ((cylXY[jj , 1] - cylXY[ll , 1]) <= 0 and (cylXY[jj, 0] - cylXY[ll , 0]) > 0):
                             thetaIJ = 2 * cmath.pi - thetaIJ
 
-                        JM[jnu - 1][22] = cmath.exp(-1j * (nu[jnu - 1] - m[jm - 1]) * thetaIJ) * hankel2((m[jm - 1] - nu[jnu - 1]), k0 * q * Ljl)
+                        JM[jnu - 1][22] = -cmath.exp(-1j * (nu[jnu - 1] - m[jm - 1]) * thetaIJ) ** hankel2((m[jm - 1] - nu[jnu - 1]), k0 * q * Ljl)
 
                         JM[jnu - 1][23] = besselj(m[jnu - 1], Q)  # Jm_out
                         JM[jnu - 1][24] = -JM[jnu - 1][23] * m[jnu - 1] / Q + besselj(m[jnu - 1] + 1, Q)  # dJm_out

@@ -118,10 +118,10 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_0, a_0, ee, cylXY, k, p, EE, G
 
 
 
-                        JM[jnu-1][22] = cmath.exp(-1j * (nu[jnu-1] - m[jm-1]) * thetaIJ) *  hankel2((m[jm-1] - nu[jnu-1]), k0* q * Ljl)  # HmInll
+                        JM[jnu-1][22] =  cmath.exp(-1j * (nu[jnu-1] - m[jm-1]) * thetaIJ) * q *  hankel2((m[jm-1] - nu[jnu-1]), k0* q * Ljl)  # HmInll
 
                         JM[jnu-1][23] = besselj(m[jnu-1], Q)  # Jm_out
-                        JM[jnu-1][24] = -JM[jnu-1][23] * m[jnu-1] / Q + besselj(m[jnu-1] + 1, Q)  # dJm_out
+                        JM[jnu-1][24] = JM[jnu-1][23] * m[jnu-1] / Q - besselj(m[jnu-1] + 1, Q)  # dJm_out
 # спросить почему они одинаковые?
                         JM[jnu-1][25] = JM[jnu-1][22] * JM[jnu-1][23]  # Ez_inc
                         JM[jnu-1][26] = JM[jnu-1][22] * JM[jnu-1][23]  # Hz_inc
