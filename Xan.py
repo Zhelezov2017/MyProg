@@ -20,16 +20,16 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_0, a_0, ee, cylXY, k, p, EE, G
 
     # вычисляем элементы матрицы рассеяния для внутренней области цилиндра
     mainq = EE ** 2 - GG ** 2 + EE * HH - (HH + EE) * p ** 2
-    F=cmath.sqrt(EE*GG**2*HH*(GG**2-(HH-EE)**2))
-    Pb=cmath.sqrt(EE-(HH+EE)*GG**2/(HH-EE)**2-2*F/(HH-EE)**2)
-    Pc=cmath.sqrt(EE-(HH+EE)*GG**2/(HH-EE)**2+2*F/(HH-EE)**2)
-    #radq = cmath.sqrt((HH - EE) ** 2 * p **4 + 2 * ((GG ** 2)*(HH + EE) - EE * (HH - EE) **2) * p **2 +(EE ** 2 - GG ** 2 - EE * HH) ** 2)
-    radq = -(HH-EE)*cmath.sqrt((p**2-Pb**2)*(p**2-Pc**2))
+    #F=cmath.sqrt(EE*GG**2*HH*(GG**2-(HH-EE)**2))
+    #Pb=cmath.sqrt(EE-(HH+EE)*GG**2/(HH-EE)**2-2*F/(HH-EE)**2)
+    #Pc=cmath.sqrt(EE-(HH+EE)*GG**2/(HH-EE)**2+2*F/(HH-EE)**2)
+    radq = cmath.sqrt((HH - EE) ** 2 * p **4 + 2 * ((GG ** 2)*(HH + EE) - EE * (HH - EE) **2) * p **2 +(EE ** 2 - GG ** 2 - EE * HH) ** 2)
+    #radq = -(HH-EE)*cmath.sqrt((p**2-Pb**2)*(p**2-Pc**2))
     q1 = cmath.sqrt(0.5 * (mainq - radq) / EE)
     q2 = cmath.sqrt(0.5 * (mainq + radq) / EE)
 
-    n1 = -(EE * (p * GG)**(-1)) * (p ** 2 + q1 ** 2 + (GG ** 2)/EE - EE)
-    n2 = -(EE * (p * GG)**(-1)) * (p ** 2 + q2 ** 2 + (GG ** 2)/EE - EE)
+    n1 = -(EE / (p * GG)) * (p ** 2 + q1 ** 2 + (GG ** 2)/EE - EE)
+    n2 = -(EE / (p * GG)) * (p ** 2 + q2 ** 2 + (GG ** 2)/EE - EE)
 
     alp1 = -1 + (p ** 2 + q1 ** 2 - EE) / GG
     alp2 = -1 + (p ** 2 + q2 ** 2 - EE) / GG
@@ -69,7 +69,7 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_0, a_0, ee, cylXY, k, p, EE, G
         JM[n][16] = q * JM[n][14]  #Ez_sct
         JM[n][17]= q * JM[n][14]  #Hz_sct
 
-        A = 1 / (k0 * (1 - (p ** 2)))
+        A = 1 / (k0 * q**2)
         JM[n][18] = -q * (A * ((p * (per / a_0)) * JM[n][14])) #Ephi_sctE
         JM[n][19]= 1j*q * (A * (k0 * q * JM[n][15])) #Ephi_sctH
         JM[n][20]= -q * (A * ((p * (per / a_0)) * JM[n][14])) #Hphi_sctH
@@ -95,7 +95,7 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_0, a_0, ee, cylXY, k, p, EE, G
                                 matrixGS[jmmm + jj * 4 * mMax + 1, jnunu + ll * 4 * mMax] = JM[jm - 1][10]  # Hz1
                                 matrixGS[jmmm + jj * 4 * mMax + 1, jnunu + ll * 4 * mMax + 1] = JM[jm - 1][11]  # Hz2
                                 matrixGS[jmmm + jj * 4 * mMax + 1, jnunu + ll * 4 * mMax + 2] = 0
-                                matrixGS[jmmm + jj * 4 * mMax + 1, jnunu + ll * 4 * mMax + 3] = - JM[jm - 1][17]  # -Hz_sct
+                                matrixGS[jmmm + jj * 4 * mMax + 1, jnunu + ll * 4 * mMax + 3] = -JM[jm - 1][17]  # -Hz_sct
 
                                 matrixGS[jmmm + jj * 4 * mMax + 2, jnunu + ll * 4 * mMax] = JM[jm - 1][8]  # Ephi1
                                 matrixGS[jmmm + jj * 4 * mMax + 2, jnunu + ll * 4 * mMax + 1] = JM[jm - 1][9]  # Ephi2
@@ -160,7 +160,7 @@ def dispeq_gyrotropic_cylindersArrayFull(N_max, w_0, a_0, ee, cylXY, k, p, EE, G
 #matrixGS
 #abs(np.linalg.det(matrixGS))
 a_0 = 100
-L = 3 * a_0
+L = 5 * a_0
 n_e = 1e6
 e_0 = 4.8e-10
 m_e = 9.1e-28
@@ -168,7 +168,7 @@ c = 3e10
 H0 = 0.5
 w_H = (e_0 * H0) / (m_e * c)
 w_p = cmath.sqrt(4 * math.pi * e_0 ** 2 * n_e / m_e)
-w_0 = 0.5 * w_H
+w_0 = 4.97 * w_H
 k_0 = w_0 / c
     # w_0
     # N_max=mMax=...=3
@@ -196,12 +196,13 @@ p = [i for i in np.arange(1.1,10,0.1)]
 n=0
 X=[]
 Y=[]
-for оp in np.arange(1.1,10,0.1):
-    result =math.log(dispeq_gyrotropic_cylindersArrayFull(1, w_0, a_0, 1, cylXY1, k_0, оp, EE, GG, HH, 3e10))
-    X.append(result)
-#print(dispeq_gyrotropic_cylindersArrayFull(3, w_0, 100, 1, cylXY, k_0,6., EE, GG, HH, 3e10))
-for yp in np.arange(1.1,10,0.1):
-    result =math.log(dispeq_gyrotropic_cylindersArrayFull(1, w_0, a_0, 1, cylXY, k_0, yp, EE, GG, HH, 3e10))
-    Y.append(result)
-plt.plot(p, X, p, Y)
-plt.show()
+
+#for оp in np.arange(1.1,10,0.1):
+#    result =math.log(dispeq_gyrotropic_cylindersArrayFull(1, w_0, a_0, 1, cylXY1, k_0, оp, EE, GG, HH, 3e10))
+#    X.append(result)
+#print(dispeq_gyrotropic_cylindersArrayFull(1, w_0, 100, 1, cylXY, k_0,1.1, EE, GG, HH, 3e10))
+#for yp in np.arange(1.1,10,0.1):
+#    result =(dispeq_gyrotropic_cylindersArrayFull(1, w_0, a_0, 1, cylXY, k_0, yp, EE, GG, HH, 3e10))
+#    Y.append(math.log(result**2))
+#plt.plot(p, X, p, Y)
+#plt.show()
